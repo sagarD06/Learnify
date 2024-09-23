@@ -1,2 +1,2 @@
-Learnify
-A course selling we application
+# **Learnify**
+## *A course selling we application*
