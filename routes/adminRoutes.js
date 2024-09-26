@@ -2,7 +2,8 @@ import express from "express";
 import z from "zod";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { Admin } from "../db";
+import mongoose from "mongoose";
+import { Admin, Course } from "../db";
 import "dotenv/config";
 
 const adminRouter = express.Router();
@@ -112,7 +113,26 @@ adminRouter.get("/create-course", async function (req, res) {
   const { title, description, price, imageUrl, creatorId } = parsedreq.data;
 
   try {
-    
+    // Findin if the course already exist
+    const existingCourse = await Course.find({ title: title });
+    if (existingCourse) {
+      return res.status(400).json({
+        message: "Course already exist!",
+        success: false,
+      });
+    }
+    const response = await Course.create({
+      title,
+      description,
+      price,
+      imageUrl,
+      creatorId,
+    });
+    return res.json({
+      message: "You have created a new course",
+      success: true,
+      data: response,
+    });
   } catch (error) {
     return res.status(500).json({
       message: error.message || "Something went wrong while creating course",
