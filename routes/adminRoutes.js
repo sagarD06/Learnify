@@ -2,9 +2,10 @@ import express from "express";
 import z from "zod";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import mongoose from "mongoose";
-import { Admin, Course } from "../db";
-import "dotenv/config";
+
+import { Admin, Course } from "../db.js";
+import adminAuth from "./middleware/adminMiddleware.js";
+import "dotenv/config.js";
 
 const adminRouter = express.Router();
 
@@ -52,33 +53,32 @@ adminRouter.post("/sign-up", async function (req, res) {
 /** SIGN IN ENDPOINT **/
 adminRouter.post("/sign-in", async function (req, res) {
   const validatedReq = z.object({
-    identifier: z
+    email: z
       .string()
-      .min(3, { message: "Minimum 3 charaters expected" })
+      .email()
+      .min(5, { message: "Minimum 3 charaters expected" })
       .max(30, { message: "Maximum 30 charaters allowed" }),
     password: z.string().min(8, { message: "Minimum 8 charaters expected" }),
   });
   const parsedreq = validatedReq.safeParse(req.body);
-  const { identifier, password } = parsedreq.data;
+  const { email, password } = parsedreq.data;
   try {
-    const user = await Admin.findOne({
-      $or: [{ email: identifier }, { username: identifier }],
-    });
-
+    const user = await Admin.findOne({ email: email });
     if (!user) {
       return res.status(404).json({
         message: "User not found",
         success: false,
       });
     }
-    const ispasswordCorrect = await bcrypt.compare(user.password, password);
+    const ispasswordCorrect = await bcrypt.compare(password, user.password);
     if (!ispasswordCorrect) {
       return res.status(401).json({
         message: "Invalid credentials",
         success: false,
       });
     }
-    const token = jwt.sign(user._id, process.env.JWT_SECRET);
+
+    const token = jwt.sign(user._id.toString(), process.env.JWT_ADMIN_SECRET);
 
     if (!token) {
       return res
@@ -93,13 +93,32 @@ adminRouter.post("/sign-in", async function (req, res) {
     });
   } catch (error) {
     return res.status(500).json({
-      message: "You have been signed in",
+      message: error.message || "Something went wrong while signing in",
+    });
+  }
+});
+
+/** GET COURSE ENDPOINT **/
+adminRouter.get("/all-courses", adminAuth, async function (req, res) {
+  const creatorId = req.creatorId;
+
+  try {
+    const courses = await Course.find({ creatorId: creatorId });
+    return res.status(200).json({
+      message: "Courses fetched successfully",
+      success: true,
+      courses: courses,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || "Something went wrong while fetching courses",
+      success: false,
     });
   }
 });
 
 /** CREATE COURSE ENDPOINT **/
-adminRouter.get("/create-course", async function (req, res) {
+adminRouter.post("/create-course", adminAuth, async function (req, res) {
   const validatedReq = z.object({
     title: z.string().min(3, { message: "Minimum 3 charaters expected" }),
     description: z
@@ -107,15 +126,14 @@ adminRouter.get("/create-course", async function (req, res) {
       .min(10, { message: "Minimum 10 charaters expected" }),
     price: z.number().min(0, { message: "Price cannot be negative" }),
     imageUrl: z.string().min(0, { message: "Duration cannot be negative" }),
-    creatorId: z.string(),
   });
   const parsedreq = validatedReq.safeParse(req.body);
-  const { title, description, price, imageUrl, creatorId } = parsedreq.data;
-
+  const { title, description, price, imageUrl } = parsedreq.data;
+  const creatorId = req.creatorId;
   try {
     // Findin if the course already exist
     const existingCourse = await Course.find({ title: title });
-    if (existingCourse) {
+    if (existingCourse.length > 0) {
       return res.status(400).json({
         message: "Course already exist!",
         success: false,
@@ -128,7 +146,7 @@ adminRouter.get("/create-course", async function (req, res) {
       imageUrl,
       creatorId,
     });
-    return res.json({
+    return res.status(200).json({
       message: "You have created a new course",
       success: true,
       data: response,
@@ -141,17 +159,73 @@ adminRouter.get("/create-course", async function (req, res) {
 });
 
 /** ADD CONTENT ENDPOINT **/
-adminRouter.put("/add-course-content", function (req, res) {
-  res.json({
-    message: "You have added content to the cpurse successfully",
-  });
-});
+adminRouter.put(
+  "/add-course-content/:courseId",
+  adminAuth,
+  async function (req, res) {
+    const { title, description, price, imageUrl } = req.body;
+    const { courseId } = req.params;
+    const creatorId = req.creatorId;
+
+    try {
+      const courseRequested = await Course.findOne({ _id: courseId });
+      if (courseRequested.creatorId.toString() !== creatorId) {
+        return res.status(403).json({
+          message: "You are not authorized to update this course",
+          success: false,
+        });
+      }
+      const updatedCourse = await Course.findByIdAndUpdate(
+        { _id: courseId },
+        {
+          title,
+          description,
+          price,
+          imageUrl,
+          creatorId,
+        },
+        { new: true }
+      );
+      return res.status(200).json({
+        message: "You have added content to the cpurse successfully",
+        success: true,
+        data: updatedCourse,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message || "Something went wrong while updating course",
+        success: false,
+      });
+    }
+  }
+);
 
 /** DELETE ENDPOINT **/
-adminRouter.delete("/delete-course", function (req, res) {
-  res.json({
-    message: "You have deleted the course",
-  });
-});
+adminRouter.delete(
+  "/delete-course/:courseId",
+  adminAuth,
+  async function (req, res) {
+    const courseId = req.params.courseId;
+    try {
+      const courseRequested = await Course.findOne({ _id: courseId });
+      if (courseRequested.creatorId.toString() !== req.creatorId) {
+        return res.status(403).json({
+          message: "You are not authorized to delete this course",
+          success: false,
+        });
+      }
+      await Course.findByIdAndDelete({ _id: courseId });
+      return res.json({
+        message: "You have deleted the course",
+        success: true,
+      });
+    } catch (error) {
+      return res.json({
+        message: error.message || "Something went wrong while deleting course",
+        success: false,
+      });
+    }
+  }
+);
 
 export { adminRouter };
