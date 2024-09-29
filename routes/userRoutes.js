@@ -1,9 +1,11 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import z from "zod";
 
-import { User, Course } from "../db.js";
+import { User, Course, Purchase } from "../db.js";
 import userAuth from "./middleware/userMiddleware.js";
+import "dotenv/config.js";
 
 const userRouter = express.Router();
 
@@ -51,18 +53,16 @@ userRouter.post("/sign-up", async function (req, res) {
 /** SIGN IN ENDPOINT **/
 userRouter.post("/sign-in", async function (req, res) {
   const validatedReq = z.object({
-    identifier: z
+    email: z
       .string()
       .min(3, { message: "Minimum 3 charaters expected" })
       .max(30, { message: "Maximum 30 charaters allowed" }),
     password: z.string().min(8, { message: "Minimum 8 charaters expected" }),
   });
   const parsedreq = validatedReq.safeParse(req.body);
-  const { identifier, password } = parsedreq.data;
+  const { email, password } = parsedreq.data;
   try {
-    const user = await User.findOne({
-      $or: [{ email: identifier }, { username: identifier }],
-    });
+    const user = await User.findOne({ email: email });
 
     if (!user) {
       return res.status(404).json({
@@ -70,7 +70,7 @@ userRouter.post("/sign-in", async function (req, res) {
         success: false,
       });
     }
-    const ispasswordCorrect = await bcrypt.compare(user.password, password);
+    const ispasswordCorrect = await bcrypt.compare(password, user.password);
     if (!ispasswordCorrect) {
       return res.status(401).json({
         message: "Invalid credentials",
@@ -92,14 +92,24 @@ userRouter.post("/sign-in", async function (req, res) {
     });
   } catch (error) {
     return res.status(500).json({
-      message: "You have been signed in",
+      message: error.message || "Something went wrong while signing in",
     });
   }
 });
+
+/** GET PURCHASED ROUTES **/
 userRouter.get("/courses", userAuth, async function (req, res) {
   try {
-    res.json({
+    const courseIds = await Purchase.find({ userId: req.userId }).select([
+      "courseId",
+    ]);
+    console.log(courseIds);
+    const courses = await Course.find({
+      _id: { $in: courseIds.map((course) => course.courseId) },
+    }).select("-creatorId");
+    return res.json({
       message: "Courses fetched successfully",
+      courses,
     });
   } catch (error) {
     return res.status(500).json({
