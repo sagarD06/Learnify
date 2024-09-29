@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import z from "zod";
 
-import { User, Course, Purchase } from "../db.js";
+import { User, Course, Purchase } from "../../db.js";
 import userAuth from "./middleware/userMiddleware.js";
 import "dotenv/config.js";
 
