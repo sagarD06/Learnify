@@ -5,10 +5,12 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "./App.jsx";
 import "./index.css";
 import UserSignUp from "./components/user/UserSignUp.jsx";
+import UserSignIn from "./components/user/UserSignIn.jsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
   { path: "/user/sign-up", element: <UserSignUp /> },
+  { path: "/user/sign-in", element: <UserSignIn /> },
 ]);
 
 createRoot(document.getElementById("root")).render(
