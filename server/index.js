@@ -1,6 +1,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import cors from "cors";
 
 import { userRouter } from "./routes/userRoutes.js";
 import { courseRouter } from "./routes/courseRoutes.js";
@@ -9,6 +10,7 @@ import dbConnect from "./db.js";
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 const port = 3000;
 
 dbConnect(); // Connect to MongoDB database
