@@ -10,6 +10,7 @@ import AdminDashboard from "../components/admin/AdminDashboard";
 import AdminCreateCourse from "../components/admin/AdminCreateCourse";
 import AdminUpdateCourse from "../components/admin/AdminUpdateCourse";
 import AdminDeleteCourse from "../components/admin/AdminDeleteCourse";
+import AllCourses from "../components/courses/AllCourses";
 
 export const router = createBrowserRouter([
   { path: "/", element: <App /> },
@@ -22,4 +23,5 @@ export const router = createBrowserRouter([
   { path: "/admin/create-course", element: <AdminCreateCourse /> },
   { path: "/admin/update-course/:id", element: <AdminUpdateCourse /> },
   { path: "/admin/delete-course/:id", element: <AdminDeleteCourse /> },
+  {path : "/courses", element: <AllCourses />}
 ]);
