@@ -24,7 +24,8 @@ const UserSignIn = () => {
     );
     console.log(response.data.success);
     if (response.data.success) {
-      navigate("/");
+      localStorage.setItem("token", response.data.token);
+      navigate("/user/dashboard");
     } else {
       window.alert("Inavlid data");
     }

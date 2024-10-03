@@ -24,7 +24,8 @@ const AdminSignIn = () => {
     );
     console.log(response.data.success);
     if (response.data.success) {
-      navigate("/");
+      localStorage.setItem("token", response.data.token);
+      navigate("/admin/dashboard");
     } else {
       window.alert("Inavlid data");
     }
