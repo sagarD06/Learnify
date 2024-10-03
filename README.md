@@ -15,3 +15,11 @@
 - Using **AXIOS** to fetch the requests from server
 - **Acertinity UI** used for some awesome pre-built UI components
  
+ ### Steps to clone and setup the repo
+ `git clone [text](https://github.com/sagarD06/Learnify.git)
+  cd client
+  npm i
+  cd ..
+  cd server
+  npm i  
+ `
