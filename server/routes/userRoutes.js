@@ -103,10 +103,9 @@ userRouter.get("/courses", userAuth, async function (req, res) {
     const courseIds = await Purchase.find({ userId: req.userId }).select([
       "courseId",
     ]);
-    console.log(courseIds);
     const courses = await Course.find({
       _id: { $in: courseIds.map((course) => course.courseId) },
-    }).select("-creatorId");
+    }).select(["-creatorId", "-price"]);
     return res.json({
       message: "Courses fetched successfully",
       courses,
