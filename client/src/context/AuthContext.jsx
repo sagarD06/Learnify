@@ -11,15 +11,21 @@ export const AuthProvider = ({ children }) => {
   // Check if the token exists in localStorage and set the user
   useEffect(() => {
     const token = localStorage.getItem("token");
-
     if (token) {
       // Set user as authenticated if token is found
-      setUser({ token });
+      setUser(token);
     } else {
       setUser(null);
     }
     setLoading(false); // Set loading to false after check
-  }, [user]);
+  }, []);
+
+  //Login function
+
+  const login = (token) => {
+    localStorage.setItem("token", token);
+    setUser(token);
+  };
 
   // Logout function
   const logout = () => {
@@ -28,7 +34,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

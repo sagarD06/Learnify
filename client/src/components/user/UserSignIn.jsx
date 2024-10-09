@@ -1,15 +1,18 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { cn } from "../../lib/utils.js";
+import { AuthContext } from "../../context/AuthContext.jsx";
 
 const UserSignIn = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+
+  const { user, login } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -24,7 +27,7 @@ const UserSignIn = () => {
     );
     console.log(response.data.success);
     if (response.data.success) {
-      localStorage.setItem("token", response.data.token);
+      login(response.data.token);
       navigate("/user/dashboard");
     } else {
       window.alert("Inavlid data");
