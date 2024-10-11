@@ -119,18 +119,21 @@ adminRouter.get("/all-courses", adminAuth, async function (req, res) {
 
 /** CREATE COURSE ENDPOINT **/
 adminRouter.post("/create-course", adminAuth, async function (req, res) {
-  const validatedReq = z.object({
-    title: z.string().min(3, { message: "Minimum 3 charaters expected" }),
-    description: z
-      .string()
-      .min(10, { message: "Minimum 10 charaters expected" }),
-    price: z.number().min(0, { message: "Price cannot be negative" }),
-    imageUrl: z.string().min(0, { message: "Duration cannot be negative" }),
-  });
-  const parsedreq = validatedReq.safeParse(req.body);
-  const { title, description, price, imageUrl } = parsedreq.data;
-  const creatorId = req.creatorId;
+  // console.log(req.body)
   try {
+    const validatedReq = z.object({
+      title: z.string().min(3, { message: "Minimum 3 charaters expected" }),
+      description: z
+        .string()
+        .min(10, { message: "Minimum 10 charaters expected" }),
+      price: z.number().min(0, { message: "Price cannot be negative" }),
+      imageUrl: z.string().min(0, { message: "Duration cannot be negative" }),
+      creatorId: z.string(),
+    });
+    const parsedreq = validatedReq.safeParse(req.body);
+    
+    const { title, description, price, imageUrl } = parsedreq.data;
+    const creatorId = req.creatorId;
     // Findin if the course already exist
     const existingCourse = await Course.find({ title: title });
     if (existingCourse.length > 0) {

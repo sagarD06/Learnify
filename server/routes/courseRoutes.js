@@ -22,6 +22,24 @@ courseRouter.get("/", async function (req, res) {
   }
 });
 
+/** GET COURSE BY ID **/
+courseRouter.get("/:courseId", async function (req, res) {
+  const courseId = req.params.courseId;
+  try {
+    const courses = await Course.findOne({_id:courseId}).select("-creatorId");
+    res.status(200).json({
+      message: "All courses fetched succesfully",
+      success: true,
+      courses: courses,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || "something went wrong while fetching courses",
+      success: false,
+    });
+  }
+});
+
 /** PURCHASE COURSE **/
 courseRouter.post("/purchase/:courseId", userAuth, async function (req, res) {
   const userId = req.userId;
