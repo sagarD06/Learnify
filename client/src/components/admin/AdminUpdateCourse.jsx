@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import Course from "../Course";
 
 const AdminUpdateCourse = () => {
   return (
-    <div>AdminUpdateCourse</div>
-  )
-}
+    <div className="min-h-screen dark w-[100%] flex justify-center items-center bg-black">
+      <Course />
+    </div>
+  );
+};
 
-export default AdminUpdateCourse
+export default AdminUpdateCourse;
