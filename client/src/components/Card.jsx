@@ -1,10 +1,30 @@
+import React, { useContext } from "react";
+import axios from "axios";
+
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import PrimaryButton from "./PrimaryButton";
+import { AuthContext } from "../context/AuthContext";
 
-export const Card = ({ item }) => {
+export const Card = ({ item, courses, setUpdatedCourses }) => {
+  const { user } = useContext(AuthContext);
   const path = useLocation();
   const isAdmin = path.pathname.includes("admin");
+  async function handleDelete(id) {
+    console.log("CALLED", id);
+    try {
+      const response = await axios.delete(
+        `http://localhost:3000/api/v1/admin/delete-course/${id}`,
+        { headers: { token: user } }
+      );
+      if (response.data.success) {
+        setUpdatedCourses(courses.filter((course) => course._id !== id));
+      }
+    } catch (error) {
+      console.error("Error while deleting", error);
+    }
+  }
+
   return (
     <div className="flex relative w-full text-neutral-200 cursor-pointer flex-col rounded-2xl transition-all duration-300 hover:-translate-y-2 bg-slate-900">
       <div className="flex flex-col">
@@ -35,10 +55,12 @@ export const Card = ({ item }) => {
               <PrimaryButton
                 title={"Upload"}
                 className={"bg-gradient-to-b from-orange-400 to-orange-700"}
+                disabled={true}
               />
               <PrimaryButton
                 title={"Delete"}
                 className={"bg-gradient-to-b from-red-400 to-red-700"}
+                onClick={() => handleDelete(item._id)}
               />
             </div>
           ) : item.price ? (

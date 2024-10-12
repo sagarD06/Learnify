@@ -5,7 +5,8 @@ import axios from "axios";
 import Header from "../Header";
 import Footer from "../Footer";
 import { AuthContext } from "../../context/AuthContext";
-import { HoverEffect } from "../ui/CardHoverEffect";
+import { Link } from "react-router-dom";
+import { Card } from "../Card";
 
 const AdminDashboard = () => {
   const [courses, setCourses] = useState([]);
@@ -33,7 +34,22 @@ const AdminDashboard = () => {
           Your Courses
         </h2>
         <div className="max-w-7xl mx-auto px-8">
-          <HoverEffect items={courses} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-3 py-10">
+            {courses.map((item, idx) => (
+              <Link
+                href={item?.link}
+                key={idx}
+                className="relative group  block p-2 h-full w-full"
+              >
+                <Card
+                  key={idx}
+                  item={item}
+                  courses={courses}
+                  setUpdatedCourses={setCourses}
+                />
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
       <Footer />

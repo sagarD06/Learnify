@@ -3,8 +3,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 import Header from "../Header";
-import { CardHoverEffectDemo } from "../CourseCard";
 import Footer from "../Footer";
+import { Card } from "../Card";
+import { Link } from "react-router-dom";
 
 const AllCourses = () => {
   const [courses, setCourses] = useState([]);
@@ -29,7 +30,19 @@ const AllCourses = () => {
         <h2 className="text-zinc-100 text-xl text-center font-bold tracking-wide mt-8">
           All Courses
         </h2>
-        <CardHoverEffectDemo courses={courses} />
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-3 py-10">
+            {courses.map((item, idx) => (
+              <Link
+                href={item?.link}
+                key={idx}
+                className="relative group  block p-2 h-full w-full"
+              >
+                <Card key={idx} item={item} />
+              </Link>
+            ))}
+          </div>
+        </div>
       </div>
       <Footer />
     </div>
