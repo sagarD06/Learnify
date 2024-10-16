@@ -11,7 +11,6 @@ export const Card = ({ item, courses, setUpdatedCourses }) => {
   const path = useLocation();
   const isAdmin = path.pathname.includes("admin");
   async function handleDelete(id) {
-    console.log("CALLED", id);
     try {
       const response = await axios.delete(
         `http://localhost:3000/api/v1/admin/delete-course/${id}`,

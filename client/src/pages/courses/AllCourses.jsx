@@ -1,23 +1,20 @@
 "use client";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-import Header from "../Header";
-import Footer from "../Footer";
-import { AuthContext } from "../../context/AuthContext";
-import {Card} from "../Card"
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
+import { Card } from "../../components/Card";
 import { Link } from "react-router-dom";
 
-const UserDashboard = () => {
+const AllCourses = () => {
   const [courses, setCourses] = useState([]);
-  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     async function getCourses() {
       try {
         const response = await axios.get(
-          "http://localhost:3000/api/v1/user/courses",
-          { headers: { token: user } }
+          "http://localhost:3000/api/v1/courses/"
         );
         setCourses(response.data.courses);
       } catch (error) {
@@ -27,11 +24,10 @@ const UserDashboard = () => {
     getCourses();
   }, []);
   return (
-    <div className="relative min-h-screen dark bg-slate-950 w-full flex flex-col z-50">
-      <Header className={"z-0 border-b border-slate-700 shadow-lg"} />
-      <div className="mt-20">
+    <div className="relative min-h-96 dark bg-black w-full flex flex-col my-10">
+      <div className="mt-5">
         <h2 className="text-zinc-100 text-xl text-center font-bold tracking-wide mt-8">
-          Your Courses
+          All Courses
         </h2>
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-3 py-10">
@@ -47,9 +43,8 @@ const UserDashboard = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
 
-export default UserDashboard;
+export default AllCourses;

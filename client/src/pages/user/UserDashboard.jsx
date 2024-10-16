@@ -1,20 +1,24 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 
 import Header from "../Header";
 import Footer from "../Footer";
-import { Card } from "../Card";
+import { AuthContext } from "../../context/AuthContext";
+import {Card} from "../Card"
 import { Link } from "react-router-dom";
 
-const AllCourses = () => {
+const UserDashboard = () => {
   const [courses, setCourses] = useState([]);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     async function getCourses() {
+      console.log(user)
       try {
         const response = await axios.get(
-          "http://localhost:3000/api/v1/courses/"
+          "http://localhost:3000/api/v1/user/courses",
+          { headers: { token: user } }
         );
         setCourses(response.data.courses);
       } catch (error) {
@@ -28,7 +32,7 @@ const AllCourses = () => {
       <Header className={"z-0 border-b border-slate-700 shadow-lg"} />
       <div className="mt-20">
         <h2 className="text-zinc-100 text-xl text-center font-bold tracking-wide mt-8">
-          All Courses
+          Your Courses
         </h2>
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-3 py-10">
@@ -49,4 +53,4 @@ const AllCourses = () => {
   );
 };
 
-export default AllCourses;
+export default UserDashboard;

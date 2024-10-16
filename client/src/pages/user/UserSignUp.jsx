@@ -1,14 +1,14 @@
 "use client";
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
+import { Label } from "../../components/ui/label.jsx";
+import { Input } from "../../components/ui/input.jsx";
 import { cn } from "../../lib/utils.js";
-import { BackgroundBeamsWithCollision } from "../ui/BackgroundBeamsWithCollision.jsx";
+import { BackgroundBeamsWithCollision } from "../../components/ui/BackgroundBeamsWithCollision.jsx";
 
-const AdminSignUp = () => {
+const UserSignUp = () => {
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
   const [email, setEmail] = useState();
@@ -19,7 +19,7 @@ const AdminSignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const response = await axios.post(
-      "http://localhost:3000/api/v1/admin/sign-up",
+      "http://localhost:3000/api/v1/user/sign-up",
       {
         firstName,
         lastName,
@@ -29,7 +29,7 @@ const AdminSignUp = () => {
     );
     console.log(response.data.success);
     if (response.data.success) {
-      navigate("/admin/sign-in");
+      navigate("/user/sign-in");
     } else {
       window.alert("Inavlid data");
     }
@@ -39,7 +39,7 @@ const AdminSignUp = () => {
       <BackgroundBeamsWithCollision>
         <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
           <h2 className="font-bold text-xl text-center text-neutral-800 dark:text-neutral-200">
-            Welcome to Learnify
+          Welcome to <span className="text-purple-600">Learnify</span> 
           </h2>
 
           <form className="my-8" onSubmit={handleSubmit}>
@@ -98,6 +98,12 @@ const AdminSignUp = () => {
               <BottomGradient />
             </button>
           </form>
+          <p className="text-white text-center">
+            Already have an account?{" "}
+            <Link to="/user/sign-in" className="text-purple-600">
+              Sign in
+            </Link>
+          </p>
         </div>
       </BackgroundBeamsWithCollision>
     </div>
@@ -121,4 +127,4 @@ const LabelInputContainer = ({ children, className }) => {
   );
 };
 
-export default AdminSignUp;
+export default UserSignUp;

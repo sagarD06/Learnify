@@ -11,7 +11,7 @@ const Header = ({ className }) => {
 
   return (
     <div
-      className={`top-0 dark z-50 bg-transparent absolute w-full flex justify-between items-center px-5 py-3 ${className}`}
+      className={`top-0 bg-transparent absolute w-full flex justify-between items-center z-50 px-5 py-3 ${className}`}
     >
       <h1 className="text-3xl font-bold text-neutral-100 text-center p-4">
         Learnify

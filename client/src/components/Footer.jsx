@@ -4,7 +4,7 @@ export default function Footer({ classname }) {
   const year = new Date().getFullYear();
   return (
     <footer
-      className={`text-center flex flex-col justify-center items-center z-20 text-sm p-4 md:p-6 dark:text-white bottom-0 ${classname}`}
+      className={`text-center w-full flex flex-col justify-center items-center z-20 text-sm p-4 md:p-6 dark:text-white absolute bottom-0 ${classname}`}
     >
       <Link
         to="https://github.com/sagarD06/Learnify"

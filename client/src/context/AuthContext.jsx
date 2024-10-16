@@ -5,7 +5,9 @@ import React, { createContext, useState, useEffect } from "react";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // State for user info
+  const [user, setUser] = useState(() => {
+    return localStorage.getItem("token");
+  }); // State for user info
   const [loading, setLoading] = useState(true); // State for loading
 
   // Check if the token exists in localStorage and set the user

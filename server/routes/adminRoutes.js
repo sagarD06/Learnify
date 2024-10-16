@@ -3,7 +3,7 @@ import z from "zod";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-import { Admin, Course } from "../db.js";
+import { Admin, Course, Purchase } from "../db.js";
 import adminAuth from "./middleware/adminMiddleware.js";
 import "dotenv/config.js";
 
@@ -131,7 +131,7 @@ adminRouter.post("/create-course", adminAuth, async function (req, res) {
       creatorId: z.string(),
     });
     const parsedreq = validatedReq.safeParse(req.body);
-    
+
     const { title, description, price, imageUrl } = parsedreq.data;
     const creatorId = req.creatorId;
     // Findin if the course already exist
@@ -211,6 +211,7 @@ adminRouter.delete(
     const courseId = req.params.courseId;
     try {
       const courseRequested = await Course.findOne({ _id: courseId });
+      const isCoursePurchased = await Purchase.findOne({ courseId: courseId });
       if (courseRequested.creatorId.toString() !== req.creatorId) {
         return res.status(403).json({
           message: "You are not authorized to delete this course",
@@ -218,6 +219,9 @@ adminRouter.delete(
         });
       }
       await Course.findByIdAndDelete({ _id: courseId });
+      if (isCoursePurchased) {
+        await Purchase.deleteMany({ courseId: courseId });
+      }
       return res.json({
         message: "You have deleted the course",
         success: true,

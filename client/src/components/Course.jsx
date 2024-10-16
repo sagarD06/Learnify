@@ -4,9 +4,9 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { TextArea } from "./ui/TextArea";
+import { Input } from "../components/ui/Input";
+import { Label } from "../components/ui/label";
+import { TextArea } from "../components/ui/TextArea";
 import { AuthContext } from "../context/AuthContext";
 
 const Course = () => {
